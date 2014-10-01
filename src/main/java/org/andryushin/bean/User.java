@@ -1,24 +1,20 @@
 package org.andryushin.bean;
 
 public class User {
-    private String name;
+    private int id;
     private String login;
     private String email;
-    private String password;
 
-    public User(String name, String login, String email, String password) {
-        this.name = name;
-        this.login = login;
-        this.email = email;
-        this.password = password;
+    public User(int id) {
+        this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public int getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLogin() {
@@ -37,11 +33,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", login='" + login + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

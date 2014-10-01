@@ -1,6 +1,8 @@
 package org.andryushin.dao;
 
 import org.andryushin.bean.User;
+import org.andryushin.exception.NotUniqueUserEmailException;
+import org.andryushin.exception.NotUniqueUserLoginException;
 
 import java.sql.SQLException;
 import java.util.List;
