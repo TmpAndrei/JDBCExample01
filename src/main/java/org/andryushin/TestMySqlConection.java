@@ -1,8 +1,10 @@
 package org.andryushin;
 
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 public class TestMySqlConection {
     public static void main(String[] args) {
@@ -35,4 +37,11 @@ public class TestMySqlConection {
             System.out.println("Failed to make connection!");
         }
     }
+
+//    public static void main(String[] args) {
+//        Enumeration<Driver> enumeration = DriverManager.getDrivers();
+//        while(enumeration.hasMoreElements()){
+//            System.out.println(enumeration.nextElement());
+//        }
+//    }
 }
