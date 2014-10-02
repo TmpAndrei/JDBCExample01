@@ -16,11 +16,11 @@ public class UserDaoJdbc implements UserDao {
     public static final String DB_LOGIN = "root";
     public static final String DB_PASSWORD = "S@msung5";
 
-    public static final String SQL_SELECT_ALL = "SELECT id, login, email FROM User";
-    public static final String SQL_DELETE_BY_ID = "DELETE FROM User WHERE id = ?";
-    public static final String SQL_INSERT = "INSERT INTO User (login, email) VALUES (?,?)";
-    public static final String SQL_SELECT_BY_LOGIN = "SELECT id FROM User WHERE login = ?";
-    public static final String SQL_SELECT_BY_EMAIL = "SELECT id FROM User WHERE email = ?";
+    public static final String SQL_SELECT_ALL = "SELECT id, login, email FROM Users";
+    public static final String SQL_DELETE_BY_ID = "DELETE FROM Users WHERE id = ?";
+    public static final String SQL_INSERT = "INSERT INTO Users (login, email) VALUES (?,?)";
+    public static final String SQL_SELECT_BY_LOGIN = "SELECT id FROM Users WHERE login = ?";
+    public static final String SQL_SELECT_BY_EMAIL = "SELECT id FROM Users WHERE email = ?";
 
     static {
         JdbcUtils.initDriver(DRIVER_CLASS_NAME);
@@ -89,9 +89,10 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public void insert(User user) throws DBSystemException, NotUniqueUserLoginException, NotUniqueUserEmailException {
+    public int insert(User user) throws DBSystemException, NotUniqueUserLoginException, NotUniqueUserEmailException {
         Connection conn = getConnection();
         PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
         try {
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             conn.setAutoCommit(false);
@@ -101,14 +102,24 @@ public class UserDaoJdbc implements UserDao {
             if (existWithEmail(conn, user.getEmail())) {
                 throw new NotUniqueUserEmailException("Email '" + user.getEmail() + "'");
             }
-            ps = conn.prepareStatement(SQL_INSERT);
+            ps = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getLogin());
             ps.setString(2, user.getEmail());
-            ps.executeUpdate();
-            conn.commit();
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) throw new DBSystemException("Creating user failed, no rows affected.");
+
+            generatedKeys = ps.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                conn.commit();
+                return generatedKeys.getInt(1);
+            }
+            throw new DBSystemException("Can't get generated key");
+
         } catch (SQLException e) {
             JdbcUtils.rollbackQuietly(conn);
-            throw new DBSystemException("Can't execute sql = " + SQL_INSERT + user);
+            throw new DBSystemException("Can't execute sql = '" + SQL_INSERT + "' " + user, e);
         } finally {
             JdbcUtils.closeQuietly(ps);
             JdbcUtils.closeQuietly(conn);

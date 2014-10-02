@@ -1,16 +1,28 @@
 package org.andryushin.bean;
 
 public class User {
-    private final int id;
+    private int id;
     private String login;
     private String email;
+
+    public User() {
+    }
 
     public User(int id) {
         this.id = id;
     }
 
+    public User(String login, String email) {
+        this.login = login;
+        this.email = email;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLogin() {
