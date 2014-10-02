@@ -1,4 +1,11 @@
 package org.andryushin.exception;
 
-public class NotUniqueUserLoginException extends Exception {
+public class NotUniqueUserLoginException extends DBException {
+    public NotUniqueUserLoginException(String message) {
+        super(message);
+    }
+
+    public NotUniqueUserLoginException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

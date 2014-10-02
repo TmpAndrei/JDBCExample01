@@ -1,7 +1,7 @@
 package org.andryushin.bean;
 
 public class User {
-    private int id;
+    private final int id;
     private String login;
     private String email;
 
@@ -11,10 +11,6 @@ public class User {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getLogin() {

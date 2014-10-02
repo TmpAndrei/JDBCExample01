@@ -1,6 +1,9 @@
-package org.andryushin.dao;
+package org.andryushin.dao.impl;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class JdbcUtils {
     private static boolean initialized;
@@ -40,15 +43,6 @@ public class JdbcUtils {
         if (ps != null) {
             try {
                 ps.close();
-            } catch (SQLException e) {
-            }
-        }
-    }
-
-    public static void closeQuietly(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
             } catch (SQLException e) {
             }
         }
