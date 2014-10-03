@@ -6,8 +6,10 @@ import org.andryushin.exception.DBSystemException;
 import org.andryushin.exception.NotUniqueUserEmailException;
 import org.andryushin.exception.NotUniqueUserLoginException;
 
+import javax.jws.soap.SOAPBinding;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class UserDaoJdbc implements UserDao {
@@ -120,6 +122,40 @@ public class UserDaoJdbc implements UserDao {
         } catch (SQLException e) {
             JdbcUtils.rollbackQuietly(conn);
             throw new DBSystemException("Can't execute sql = '" + SQL_INSERT + "' " + user, e);
+        } finally {
+            JdbcUtils.closeQuietly(ps);
+            JdbcUtils.closeQuietly(conn);
+        }
+    }
+
+    @Override
+    public void insert(List<User> users) throws DBSystemException, NotUniqueUserLoginException, NotUniqueUserEmailException {
+        Connection conn = getConnection();
+        PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        try {
+            conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            conn.setAutoCommit(false);
+            ps = conn.prepareStatement(SQL_INSERT);
+            Iterator<User> iter = users.iterator();
+            while (iter.hasNext()){
+                User user = iter.next();
+//                if (existWithLogin(conn, user.getLogin())) {
+//                    throw new NotUniqueUserLoginException("Login '" + user.getLogin() + "'");
+//                }
+//                if (existWithEmail(conn, user.getEmail())) {
+//                    throw new NotUniqueUserEmailException("Email '" + user.getEmail() + "'");
+//                }
+                ps.setString(1, user.getLogin());
+                ps.setString(2, user.getEmail());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            conn.commit();
+
+        } catch (SQLException e) {
+            JdbcUtils.rollbackQuietly(conn);
+            throw new DBSystemException("Can't execute sql = '" + SQL_INSERT + "' " + users, e);
         } finally {
             JdbcUtils.closeQuietly(ps);
             JdbcUtils.closeQuietly(conn);
