@@ -15,4 +15,6 @@ public interface UserDao {
     public int insert(User user) throws DBSystemException, NotUniqueUserLoginException, NotUniqueUserEmailException;
 
     public void insert(List<User> users) throws DBSystemException, NotUniqueUserLoginException, NotUniqueUserEmailException;
+
+    public void shutdown() throws DBSystemException;
 }

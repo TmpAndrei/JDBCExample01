@@ -132,14 +132,11 @@ public class UserDaoJdbc implements UserDao {
     public void insert(List<User> users) throws DBSystemException, NotUniqueUserLoginException, NotUniqueUserEmailException {
         Connection conn = getConnection();
         PreparedStatement ps = null;
-        ResultSet generatedKeys = null;
         try {
             conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             conn.setAutoCommit(false);
             ps = conn.prepareStatement(SQL_INSERT);
-            Iterator<User> iter = users.iterator();
-            while (iter.hasNext()){
-                User user = iter.next();
+            for (User user : users){
 //                if (existWithLogin(conn, user.getLogin())) {
 //                    throw new NotUniqueUserLoginException("Login '" + user.getLogin() + "'");
 //                }
@@ -174,5 +171,10 @@ public class UserDaoJdbc implements UserDao {
         ps.setString(1, login);
         ResultSet rs = ps.executeQuery();
         return rs.next();
+    }
+
+    @Override
+    public void shutdown() throws DBSystemException {
+
     }
 }
