@@ -88,6 +88,7 @@ public class UserDaoJdbcC3P0 implements UserDao{
             JdbcUtils.rollbackQuietly(conn);
             throw new DBSystemException("Can't execute SQL = '" + sql + "'");
         } finally {
+            JdbcUtils.closeQuietly(rs);
             JdbcUtils.closeQuietly(ps);
             JdbcUtils.closeQuietly(conn);
         }

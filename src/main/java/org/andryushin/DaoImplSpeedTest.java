@@ -16,7 +16,8 @@ public class DaoImplSpeedTest {
     public static void main(String[] args) throws DBSystemException {
 //        UserDao dao = new UserDaoJdbc();
 //        UserDao dao = new UserDaoJdbcProxol();
-        UserDao dao = new UserDaoJdbcC3P0();
+//        UserDao dao = new UserDaoJdbcC3P0();
+        UserDao dao = new UserDaoJdbcDbcp();
 //        UserDao dao = new UserDaoJdbcCachedConn();
 //        UserDao dao = new UserDaoJdbcCachedConnPs();
 
