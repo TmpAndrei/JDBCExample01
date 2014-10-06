@@ -24,13 +24,14 @@ public class UserDaoJdbcCachedConnPs implements UserDao{
     public static final String SQL_SELECT_BY_EMAIL = "SELECT id FROM Users WHERE email = ?";
 
     private Connection conn;
+    private PreparedStatement ps;
 
     private Connection getConnection() throws DBSystemException {
         Connection _conn;
         try {
             _conn = DriverManager.getConnection(JDBC_URL, DB_LOGIN, DB_PASSWORD);
             _conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-//            _conn.setAutoCommit(false);
+            _conn.setAutoCommit(false);
         } catch (SQLException e) {
             throw new DBSystemException("Can't get connection with URL = '" + JDBC_URL + "'");
         }
@@ -38,16 +39,25 @@ public class UserDaoJdbcCachedConnPs implements UserDao{
     }
 
 
-    @Override
-    public List<User> selectAll() throws DBSystemException {
+    private PreparedStatement getPreparedStatement() throws DBSystemException {
         if (conn == null) {
             conn = getConnection();
         }
-        //todo: cash prepared statement
-        PreparedStatement ps = null;
-        ResultSet rs = null;
         try {
             ps = conn.prepareStatement(SQL_SELECT_ALL);
+        } catch (SQLException e) {
+            throw new DBSystemException("Can't get Prepared Statement with SQL = '" + SQL_SELECT_ALL + "'");
+        }
+        return ps;
+    }
+
+    @Override
+    public List<User> selectAll() throws DBSystemException {
+        ResultSet rs = null;
+        try {
+            if (ps == null) {
+                ps = getPreparedStatement();
+            }
             rs = ps.executeQuery();
             ArrayList<User> result = new ArrayList<User>();
             while (rs.next()) {
@@ -59,12 +69,13 @@ public class UserDaoJdbcCachedConnPs implements UserDao{
                 user.setEmail(email);
                 result.add(user);
             }
+            conn.commit();
             return result;
         } catch (SQLException e) {
+            JdbcUtils.rollbackQuietly(conn);
             throw new DBSystemException(e.getMessage(), e.getCause());
         } finally {
             JdbcUtils.closeQuietly(rs);
-            JdbcUtils.closeQuietly(ps);
         }
     }
 
@@ -85,11 +96,9 @@ public class UserDaoJdbcCachedConnPs implements UserDao{
 
     @Override
     public void shutdown() throws DBSystemException {
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            throw new DBSystemException(e.getMessage(), e.getCause());
-        }
+        JdbcUtils.closeQuietly(ps);
+        ps = null;
+        JdbcUtils.closeQuietly(conn);
         conn = null;
     }
 }

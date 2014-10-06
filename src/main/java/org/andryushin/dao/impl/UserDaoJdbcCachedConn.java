@@ -30,7 +30,7 @@ public class UserDaoJdbcCachedConn implements UserDao {
         try {
             _conn = DriverManager.getConnection(JDBC_URL, DB_LOGIN, DB_PASSWORD);
             _conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            _conn.setAutoCommit(false); //todo: add transaction
+            _conn.setAutoCommit(false);
         } catch (SQLException e) {
             throw new DBSystemException("Can't get connection with URL = '" + JDBC_URL + "'");
         }
@@ -58,8 +58,10 @@ public class UserDaoJdbcCachedConn implements UserDao {
                 user.setEmail(email);
                 result.add(user);
             }
+            conn.commit();
             return result;
         } catch (SQLException e) {
+            JdbcUtils.rollbackQuietly(conn);
             throw new DBSystemException(e.getMessage(), e.getCause());
         } finally {
             JdbcUtils.closeQuietly(rs);

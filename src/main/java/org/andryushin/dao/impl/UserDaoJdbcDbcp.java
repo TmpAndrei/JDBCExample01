@@ -8,7 +8,7 @@ import org.andryushin.exception.NotUniqueUserLoginException;
 
 import java.util.List;
 
-public class UserDaoJdbcProxol implements UserDao{
+public class UserDaoJdbcDbcp implements UserDao{
     @Override
     public List<User> selectAll() throws DBSystemException {
 

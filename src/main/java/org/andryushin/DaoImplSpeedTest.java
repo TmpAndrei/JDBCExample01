@@ -11,13 +11,13 @@ import java.util.List;
 
 public class DaoImplSpeedTest {
 
-    public static final int COUNT = 100;
+    public static final int COUNT = 500;
 
     public static void main(String[] args) throws DBSystemException {
 //        UserDao dao = new UserDaoJdbc();
 //        UserDao dao = new UserDaoJdbcProxol();
-//        UserDao dao = new UserDaoJdbcC3P0();
-        UserDao dao = new UserDaoJdbcCachedConn();
+        UserDao dao = new UserDaoJdbcC3P0();
+//        UserDao dao = new UserDaoJdbcCachedConn();
 //        UserDao dao = new UserDaoJdbcCachedConnPs();
 
         List<Long> time = new ArrayList<>();

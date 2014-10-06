@@ -1,12 +1,25 @@
 package org.andryushin.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.*;
+import java.util.Properties;
 
 public class JdbcUtils {
     private static boolean initialized;
+
+    public static Properties readPropeties() {
+        Properties props = new Properties();
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        InputStream stream = loader.getResourceAsStream("datasource.properties");
+        try {
+            props.load(stream);
+        } catch (IOException e) {
+            System.err.println("Can't load properties file = 'datasource.properties'");
+            e.printStackTrace();
+        }
+        return props;
+    }
 
     public static void initDriver(String driverClass) {
         if (!initialized) {
@@ -43,6 +56,15 @@ public class JdbcUtils {
         if (ps != null) {
             try {
                 ps.close();
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+    public static void closeQuietly(Statement st) {
+        if (st != null) {
+            try {
+                st.close();
             } catch (SQLException e) {
             }
         }
